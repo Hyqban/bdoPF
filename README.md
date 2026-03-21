@@ -2,6 +2,8 @@
 
 FIRST TIME USING: [GUIDE](docs/guide.md)
 
+Discord: https://discord.gg/dKBJwpgVHC (bdoPF)
+
 # ✨ Key Features
 - 🌳 Crafting Notes: Conveniently view recipes and quantities for crafting items.
 - ⏰ Boss Schedule: Quickly and clearly view a table of all world boss spawn times. Never miss a fight again.
@@ -102,7 +104,7 @@ https://wails.io/docs/reference/cli/
 wails build -debug
 ```
 
-### Linux（Lauch terminal）
+### Linux（Launch the terminal）
 ```
 ./bdoPF_xxx_xxx
 ...

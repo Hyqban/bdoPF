@@ -2,8 +2,11 @@
 All notable changes to this project will be documented in this file.
 
 
-## v1.0.2 - 
-1. 
+## [v1.0.2] - 
+1. Added a material calculator panel in the recipe view
+2. Supports input of desired quantity and average yield
+3. Updated app update logic and added Linux version support
+4. Updated related Markdown documentation
 
 
 ## [v1.0.1] - 2026-01-27
