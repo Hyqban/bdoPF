@@ -5,7 +5,7 @@ export namespace model {
 	    name: string;
 	    icon: string;
 	    desc: string;
-	    count?: string;
+	    count?: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new ItemDetail(source);

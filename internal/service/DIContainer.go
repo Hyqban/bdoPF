@@ -26,14 +26,14 @@ func (di *DIContainer) Register(name string, instance interface{}) {
 	di.independencies[name] = instance
 }
 
-func Resolve[T any](di *DIContainer, name string) T {
+func Resolve[T any](di *DIContainer, name string) *T {
 	instance, ok := di.independencies[name]
 
 	if !ok {
 		var zero T
-		return zero
+		return &zero
 	}
-	return instance.(T)
+	return instance.(*T)
 }
 
 func (di *DIContainer) SetLocale(locale string) {
@@ -120,9 +120,9 @@ func (di *DIContainer) SetAssetsPath() {
 }
 
 func (di *DIContainer) GetFileHandler() *FileHandler {
-	return Resolve[*FileHandler](di, "fileHandler")
+	return Resolve[FileHandler](di, "fileHandler")
 }
 
 func (di *DIContainer) GetHttpServer() *HttpServer {
-	return Resolve[*HttpServer](di, "httpServer")
+	return Resolve[HttpServer](di, "httpServer")
 }

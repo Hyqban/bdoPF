@@ -1,0 +1,32 @@
+# 1. Handle all text files automatically: 
+# Normalize to LF in the repository, and auto-detect for the working directory.
+* text=auto
+
+# 2. Explicitly set LF for source code and configuration files:
+# This prevents cross-platform conflicts in Go and Frontend development.
+*.go text eol=lf
+*.js text eol=lf
+*.ts text eol=lf
+*.json text eol=lf
+*.html text eol=lf
+*.md text eol=lf
+.gitignore text eol=lf
+
+# 3. Ensure Build and Script files use the correct endings:
+# Makefiles MUST use LF to function correctly on Linux/Debian.
+Makefile text eol=lf
+# Shell scripts must use LF for Linux execution.
+*.sh text eol=lf
+# Windows Batch files must use CRLF to run correctly on Windows.
+*.bat text eol=crlf
+
+# 4. Binary files:
+# These files should be treated as literal data and never modified by Git.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.exe binary
+*.dll binary
+*.so binary

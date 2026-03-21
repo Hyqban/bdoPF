@@ -3,7 +3,7 @@
 ## Setup Instructions
 
 1. Download the application from the releases page.
-2. Open (https://drive.google.com/file/d/1IAxk5DSVRcPrBOytydtg3ionAIgVnM96/view?usp=sharing) & download.
+2. Open https://drive.google.com/drive/folders/1sZl9hKc9T47gTr8_ZFniUbojbPibTVYi?usp=sharing & download game data and images.
 3. UNZIP and move files according to the file structure below.
 4. Launch the app.
 

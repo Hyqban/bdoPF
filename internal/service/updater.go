@@ -6,18 +6,17 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strconv"
 	"strings"
-	"syscall"
 )
 
 type Updater struct {
-	DI            *DIContainer
-	systemType    string
-	appVersion    string
+	DI         *DIContainer
+	system     string
+	systemType string
+	// appVersion    string
 	latestVersion string
 	downloadUrl   string
 	changeLog     string
@@ -34,7 +33,20 @@ func NewUpdater(di *DIContainer) *Updater {
 }
 
 func (up *Updater) checkSystemType() {
+	up.system = runtime.GOOS
 	up.systemType = runtime.GOARCH
+}
+
+func (up *Updater) concatAppName(appName string) string {
+	tempName := ""
+
+	switch up.system {
+	case "windows":
+		tempName = appName + "_" + up.system + "_" + up.systemType + ".exe"
+	case "linux":
+		tempName = appName + "_" + up.system + "_" + up.systemType
+	}
+	return tempName
 }
 
 func (up *Updater) HasLatestVersion(newVersion, appVersion string) {
@@ -57,13 +69,15 @@ func (up *Updater) HasLatestVersion(newVersion, appVersion string) {
 }
 
 func (up *Updater) parseResponse(body map[string]any, resp *model.ResponseMsg) {
+	// v1.0.1
 	tag_name, ok := body["tag_name"].(string)
 
 	if !ok {
 		return
 	}
 
-	up.HasLatestVersion(tag_name[1:], up.appVersion)
+	// up.HasLatestVersion(tag_name[1:], up.appVersion)
+	up.HasLatestVersion(tag_name[1:], DEFAULT_VERSION)
 
 	if up.latestVersion == "" {
 		resp.Code = "100"
@@ -75,13 +89,26 @@ func (up *Updater) parseResponse(body map[string]any, resp *model.ResponseMsg) {
 
 	for _, v := range assets {
 		info := v.(map[string]any)
-		// [bdoPF amd64.ex]
+		// [bdoPF windows amd64.ex]
 		exeSlice := strings.Split(info["name"].(string), "_")
 
-		// [amd64 exe]
-		if strings.Split(exeSlice[1], ".")[0] == up.systemType {
-			up.downloadUrl = info["browser_download_url"].(string)
-			break
+		if exeSlice[1] == up.system {
+			switch up.system {
+			case "windows":
+				// bdoPF_windows_amd64 or bdoPF_windows_arm64
+				// [amd64 exe]
+				if strings.Split(exeSlice[2], ".")[0] == up.systemType {
+					up.downloadUrl = info["browser_download_url"].(string)
+					break
+				}
+			case "linux":
+				//: bdoPF_linux_amd64 or bdoPF_linux_arm64
+				// amd64
+				if exeSlice[2] == up.systemType {
+					up.downloadUrl = info["browser_download_url"].(string)
+					break
+				}
+			}
 		}
 	}
 }
@@ -92,7 +119,7 @@ func (up *Updater) AppCheckForUpdates() model.ResponseMsg {
 	// 	"documentation_url":"https://docs.github.com/rest/releases/releases#get-the-latest-release",
 	// 	"status":"404"
 	// }
-	url := "https://api.github.com/repos/hyqban/bdoPF/releases/latest"
+	url := "https://api.github.com/repos/bahyqn/bdoPF/releases/latest"
 
 	header := map[string]string{
 		"X-GitHub-Api-Version": "2022-11-28",
@@ -108,7 +135,7 @@ func (up *Updater) AppCheckForUpdates() model.ResponseMsg {
 	up.parseResponse(responseBody, &responseMsg)
 
 	if up.downloadUrl != "" && up.latestVersion != "" {
-		cf := Resolve[*Config](up.DI, "config")
+		cf := Resolve[Config](up.DI, "config")
 		cf.NewVersion.Version = up.latestVersion
 		cf.NewVersion.DownloadUrl = up.downloadUrl
 
@@ -127,8 +154,9 @@ func (up *Updater) AppCheckForUpdates() model.ResponseMsg {
 func (up *Updater) DownloadUpdates() model.ResponseMsg {
 	var responseMsg model.ResponseMsg
 
-	cf := Resolve[*Config](up.DI, "config")
-	up.CurrentExe = cf.AppName + "_" + up.systemType + ".exe"
+	cf := Resolve[Config](up.DI, "config")
+	// up.CurrentExe = cf.AppName + "_" + up.systemType + ".exe"
+	up.CurrentExe = up.concatAppName(cf.AppName)
 	latestAppPath := filepath.Join("tmp", up.CurrentExe)
 
 	header := map[string]string{
@@ -137,7 +165,7 @@ func (up *Updater) DownloadUpdates() model.ResponseMsg {
 	}
 	bodyBytes, ok := NewRequestForDownload(&responseMsg, "GET", cf.NewVersion.DownloadUrl, header)
 
-	fmt.Println("ok: ", ok)
+	// fmt.Println("ok: ", ok)
 	if !ok {
 		return responseMsg
 	}
@@ -174,70 +202,5 @@ func (up *Updater) DownloadUpdates() model.ResponseMsg {
 }
 
 func (up *Updater) StartUpdate() {
-	// 1. Get the absolute path of the currently running executable (working directory)
-	fh := Resolve[*FileHandler](up.DI, "fileHandler")
-
-	exeCutePath := fh.GetExePath()
-
-	up.CurrentExe = "bdoPF_" + up.systemType + ".exe"
-
-	oldExe := filepath.Join(exeCutePath, up.CurrentExe)
-
-	// 2. Path to the downloaded new EXE (assumed in tmp directory)
-	// Use filepath.Abs if you need absolute path resolution
-	newExe := filepath.Join(exeCutePath, "tmp", up.CurrentExe)
-
-	// if the latest app not exsit, but newVersion had downloadUrl and download=true
-	isExist := fh.pathExists(newExe)
-
-	if !isExist {
-		_ = up.AppCheckForUpdates()
-		_ = up.DownloadUpdates()
-	}
-	// 3. Build the CMD batch script to replace the running exe:
-	// - loop until the old EXE is deletable (ensures main process exited)
-	// - move the new EXE into place
-	// - start the new EXE
-	// - self-delete the batch script
-	batPath := filepath.Join(os.TempDir(), "update_script.bat")
-
-	installDir := filepath.Dir(oldExe)
-	batContent := fmt.Sprintf(`
-	@echo off
-	set "oldExe=%s"
-	set "newExe=%s"
-	set "installDir=%s"
-
-	:loop
-	del /f /q "%%oldExe%%"
-	if exist "%%oldExe%%" (
-		timeout /t 1 >nul
-		goto loop
-	)
-
-	move /y "%%newExe%%" "%%oldExe%%"
-
-	rem Change back to the install directory before starting, to avoid config path issues
-	cd /d "%%installDir%%"
-	start "" "%%oldExe%%"
-
-	rem Self-delete the script
-	del "%%~f0"
-	`, oldExe, newExe, installDir)
-
-	if err := os.WriteFile(batPath, []byte(batContent), 0644); err != nil {
-		return
-	}
-
-	cmd := exec.Command("cmd", "/c", batPath)
-
-	cmd.SysProcAttr = &syscall.SysProcAttr{
-		HideWindow:    true,
-		CreationFlags: syscall.CREATE_NEW_PROCESS_GROUP, // create no window
-	}
-
-	if err := cmd.Start(); err != nil {
-		return
-	}
-	os.Exit(0)
+	StartUpdateApp(up)
 }

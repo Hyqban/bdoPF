@@ -11,5 +11,5 @@ export class Amount {
     constructor(protected search: SearchService) {}
 
     @Input() breadCrumbLength: number = 0;
-    @Input() itemCount: string = '';
+    @Input() itemCount: number = 1;
 }

@@ -37,7 +37,7 @@ export interface Item {
     name: string;
     icon: string;
     desc?: string;
-    count?: string;
+    count?: number;
 }
 
 export interface HouseItem {

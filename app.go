@@ -34,7 +34,7 @@ func (a *App) startup(ctx context.Context) {
 	addr := httpserver.Start()
 	a.DI.SetAddr(addr)
 
-	cf := service.Resolve[*service.Config](a.DI, "config")
+	cf := service.Resolve[service.Config](a.DI, "config")
 
 	cf.StartupPrepare(a.DI.ResourcePath.AssetsPath)
 }

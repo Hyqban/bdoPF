@@ -105,7 +105,7 @@ export class CustomeTitleBar implements OnInit {
                     this.itemSearchResults.set([]);
                 }
             },
-            { injector: this.injector }
+            { injector: this.injector },
         );
 
         this.searchControl.valueChanges
@@ -149,9 +149,9 @@ export class CustomeTitleBar implements OnInit {
                             console.error('Search API Error:', error);
                             // return of([]);
                             return of(this.search.searchResults());
-                        })
+                        }),
                     );
-                })
+                }),
             )
             .subscribe((results: Item[]) => {
                 this.search.addSearchResults(results);
@@ -164,6 +164,7 @@ export class CustomeTitleBar implements OnInit {
 
     async searchItemById(el: Item) {
         const itemData = await this.search.selectItem(el);
+
         this.search.currentItem.set(itemData as ItemInfo);
         this.isResultVisible.set(true);
     }

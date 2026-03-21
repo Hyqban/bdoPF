@@ -4,22 +4,20 @@
         {
             "label": "wails dev",
             "type": "shell",
-            "command": "wails dev",
-            "problemMatcher": [],
-            "icon": {
-                "id": "rocket"
-            },
-            "group": "none"
+            "command": "wails dev -tags webkit2_41",
+            "icon": { "id": "rocket" },
+            "problemMatcher": ["$tsc"],
+            "presentation": { "reveal": "always" },
+            "group": "test"
         },
         {
             "label": "wails build",
             "type": "shell",
-            "command": "wails build -platform windows/amd64 -o bdoPF_amd64.exe",
-            "problemMatcher": [],
-            "icon": {
-                "id": "tools",
-            },
-            "group": "none"
+            "command": "wails build -tags webkit2_41",
+            "icon": { "id": "tools" },
+            "problemMatcher": ["$tsc"],
+            "presentation": { "reveal": "always" },
+            "group": "build"
         }
     ]
 }

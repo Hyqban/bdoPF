@@ -8,6 +8,7 @@ import (
 	"os"
 	"regexp"
 	"runtime"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -343,13 +344,20 @@ func (gd *GameData) parseItem(item []*etree.Element) []model.ItemDetail {
 	tempData := []model.ItemDetail{}
 
 	for _, el := range item {
-		tempData = append(tempData, model.ItemDetail{
-			Id:    gd.safeExtracText(el, "id"),
-			Name:  gd.safeExtracText(el, "name"),
-			Icon:  gd.safeExtracText(el, "icon"),
-			Desc:  gd.StripDataPlaceholders(gd.safeExtracText(el, "desc")),
-			Count: gd.safeExtracText(el, "count"),
-		})
+
+		item := model.ItemDetail{
+			Id:   gd.safeExtracText(el, "id"),
+			Name: gd.safeExtracText(el, "name"),
+			Icon: gd.safeExtracText(el, "icon"),
+			Desc: gd.StripDataPlaceholders(gd.safeExtracText(el, "desc")),
+		}
+		count, _ := strconv.Atoi(gd.safeExtracText(el, "count"))
+
+		if count >= 1 {
+			item.Count = count
+		}
+
+		tempData = append(tempData, item)
 	}
 	return tempData
 }

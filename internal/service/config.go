@@ -8,7 +8,7 @@ import (
 )
 
 var CONFIG_PATH = "config.json"
-var DEFAULT_VERSION = "1.0.0"
+var DEFAULT_VERSION = "1.0.1"
 
 // var DEFAULT_VERSION = "0.0.9"
 
@@ -66,13 +66,13 @@ func getDefaultConfig() *Config {
 }
 
 func (cf *Config) enforceSystemFields() {
+	cf.Version = DEFAULT_VERSION
 	if cf.Version == cf.NewVersion.Version {
 		cf.NewVersion.DownloadUrl = ""
 		cf.NewVersion.Version = ""
 		cf.NewVersion.Download = false
 	}
 
-	cf.Version = DEFAULT_VERSION
 }
 
 func writeConfigToFile(cfg *Config, filePath string) error {
@@ -141,7 +141,7 @@ func loadAndValidateConfig(di *DIContainer) *Config {
 }
 
 func (cf *Config) SaveConfig() error {
-	fh := Resolve[*FileHandler](cf.DI, "fileHandler")
+	fh := Resolve[FileHandler](cf.DI, "fileHandler")
 
 	content, err := json.MarshalIndent(cf, "", "	")
 

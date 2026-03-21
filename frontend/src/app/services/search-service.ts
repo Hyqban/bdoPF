@@ -145,7 +145,7 @@ export class SearchService {
                 this.currentItem.set(res as ItemInfo);
 
                 this.breadCrumbs.update((el) => {
-                    el.amount.push(Number(ele.count));
+                    el.amount.push(Number(ele?.count || 1));
                     el.data.push(ele);
                     el.index += 1;
                     el.length += 1;
@@ -153,7 +153,6 @@ export class SearchService {
                 });
             }
         });
-
         // this.nextQueryAndSetCurrentItem(ele.id);
     }
 
@@ -186,7 +185,7 @@ export class SearchService {
                 el.length = 1;
 
                 this.nextQueryAndSetCurrentItem(
-                    this.breadCrumbs().data[this.breadCrumbs().index].id
+                    this.breadCrumbs().data[this.breadCrumbs().index].id,
                 );
                 return { ...el };
             }
@@ -198,7 +197,7 @@ export class SearchService {
                 el.length = index + 1;
 
                 this.nextQueryAndSetCurrentItem(
-                    this.breadCrumbs().data[this.breadCrumbs().index].id
+                    this.breadCrumbs().data[this.breadCrumbs().index].id,
                 );
                 return {
                     ...el,
@@ -210,32 +209,34 @@ export class SearchService {
         });
     }
 
-    calculateDeltaAmount(count: string): number {
+    calculateDeltaAmount(count: number): number {
         const len = this.breadCrumbs().length;
         let total: number = 1;
 
         if (len === 1) {
-            return Number(count);
+            return count;
         }
         if (len > 1) {
-            total = this.breadCrumbs().amount[len - 1] * Number(count);
+            total = this.breadCrumbs().amount[len - 1] * count;
         }
         return total;
     }
 
-    totalAmout(count: string): number {
+    totalAmout(count: number): number {
+        // console.log('count: ', count);
         const len = this.breadCrumbs().length;
         let total: number = 1;
 
         if (len === 1) {
-            return Number(count);
+            return count;
         }
         if (len > 1) {
             this.breadCrumbs().amount.forEach((el) => {
-                total *= Number(el);
+                total *= el;
             });
-            total *= Number(count);
+            total *= count;
         }
+        // console.log('total: ', total);
         return total;
     }
 

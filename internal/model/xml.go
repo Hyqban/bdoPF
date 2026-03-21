@@ -5,7 +5,7 @@ type ItemDetail struct {
 	Name  string `json:"name"`
 	Icon  string `json:"icon"`
 	Desc  string `json:"desc"`
-	Count string `json:"count,omitempty"`
+	Count int    `json:"count,omitempty"`
 }
 
 type ManufactureItem struct {
