@@ -1,7 +1,13 @@
 import { Injectable, signal, WritableSignal } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { GetAddr, GetImgPath } from '../../../wailsjs/go/service/DIContainer';
-import { SearchResultItem, ItemInfo, BreadCrumbs, Item } from '../shared/models/model';
+import {
+    SearchResultItem,
+    ItemInfo,
+    BreadCrumbs,
+    Item,
+    RecipeAmountInterface,
+} from '../shared/models/model';
 import { ReadFileById, ReadDynamicStrings } from '../../../wailsjs/go/service/FileHandler';
 
 const DEFAULT_ITEM_INFO: ItemInfo = {
@@ -49,6 +55,14 @@ export class SearchService {
     //     manufacture: {},
     //     workshop: {},
     // };
+
+    recipeAmount = signal<RecipeAmountInterface>({
+        open: false,
+        items: [],
+        amountItems: [],
+        amount: 1,
+        averageYield: 1,
+    });
 
     constructor(private sanitizer: DomSanitizer) {}
 

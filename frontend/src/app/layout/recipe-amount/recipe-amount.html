@@ -6,13 +6,18 @@
     </div>
     <div class="content">
         <form class="input" [formGroup]="form">
-            <input type="text" placeholder="unit" class="input" />
-            <input type="text" placeholder="average yield" class="input" />
+            <input type="text" placeholder="unit" formControlName="requiredInput" class="input" />
+            <input
+                type="text"
+                placeholder="average yield"
+                formControlName="optionalInput"
+                class="input"
+            />
             <!-- <button></button> -->
             <!-- <mat-icon fontIcon="functions"></mat-icon> -->
         </form>
         <div class="items">
-            @for (item of recipeAmount().items; track $index) {
+            @for (item of search.recipeAmount().amountItems; track $index) {
                 <div class="row">
                     <span>x {{ item.count }}</span>
                     <img

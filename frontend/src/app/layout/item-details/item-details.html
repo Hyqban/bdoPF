@@ -1,6 +1,6 @@
 @if (this.search.currentItem().itemKey) {
-    @if (recipeAmount().open) {
-        <app-recipe-amount class="recipe-amount" [recipeAmount]="recipeAmount"></app-recipe-amount>
+    @if (search.recipeAmount().open) {
+        <app-recipe-amount class="recipe-amount"></app-recipe-amount>
     }
     <mat-card appearance="outlined" class="mat-card">
         <div>
@@ -76,10 +76,20 @@
                         <div class="mat-tab">
                             @for (el of search.currentItem().house; track $index) {
                                 <div class="tab1">
-                                    <div class="action">
+                                    <!-- <div class="action">
                                         {{ i18n.t('craft.recipe') }}
                                         {{ $index + 1 }} -
                                         {{ i18n.getDinamicString('workshop', el.type) }}
+                                    </div> -->
+                                    <div class="tab11">
+                                        <div class="action">
+                                            {{ i18n.t('craft.recipe') }} {{ $index + 1 }}
+                                        </div>
+                                        <mat-icon
+                                            fontIcon="calculate"
+                                            class="search-icon"
+                                            (click)="openRecipeAmount(el.item)"
+                                        ></mat-icon>
                                     </div>
                                     @for (item of el.item; track item.id) {
                                         <div class="item-3" (click)="search.nextQuery(item)">
@@ -144,8 +154,18 @@
                         <div class="mat-tab">
                             @for (el of search.currentItem().cooking; track $index) {
                                 <div class="tab1">
-                                    <div class="action">
+                                    <!-- <div class="action">
                                         {{ i18n.t('craft.recipe') }} {{ $index + 1 }}
+                                    </div> -->
+                                    <div class="tab11">
+                                        <div class="action">
+                                            {{ i18n.t('craft.recipe') }} {{ $index + 1 }}
+                                        </div>
+                                        <mat-icon
+                                            fontIcon="calculate"
+                                            class="search-icon"
+                                            (click)="openRecipeAmount(el)"
+                                        ></mat-icon>
                                     </div>
                                     @for (item of el; track item.id) {
                                         <div class="item-3" (click)="search.nextQuery(item)">
@@ -256,10 +276,21 @@
                         <div class="mat-tab">
                             @for (el of search.currentItem().processing; track $index) {
                                 <div class="tab1">
-                                    <div class="action">
+                                    <!-- <div class="action">
                                         {{ i18n.t('craft.recipe') }}
                                         {{ $index + 1 }} -
                                         {{ i18n.getDinamicString('manufacture', el.action) }}
+                                    </div> -->
+                                    <div class="tab11">
+                                        <div class="action">
+                                            {{ i18n.t('craft.recipe') }} {{ $index + 1 }} -
+                                            {{ i18n.getDinamicString('manufacture', el.action) }}
+                                        </div>
+                                        <mat-icon
+                                            fontIcon="calculate"
+                                            class="search-icon"
+                                            (click)="openRecipeAmount(el.item)"
+                                        ></mat-icon>
                                     </div>
                                     @for (item of el.item; track item.id) {
                                         <div class="item-3" (click)="search.nextQuery(item)">

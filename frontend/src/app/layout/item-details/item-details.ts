@@ -21,18 +21,24 @@ export class ItemDetails {
         protected i18n: I18nService,
     ) {}
 
-    recipeAmount: WritableSignal<RecipeAmountInterface> = signal<RecipeAmountInterface>({
-        open: false,
-        items: [],
-        amount: 1,
-        averageYield: 1,
-    });
+    // recipeAmount: WritableSignal<RecipeAmountInterface> = signal<RecipeAmountInterface>({
+    //     open: false,
+    //     items: [],
+    //     amount: 1,
+    //     averageYield: 1,
+    // });
 
     openRecipeAmount(items: Item[]) {
-        this.recipeAmount.update((el) => ({
+        this.search.recipeAmount.update((el) => ({
             ...el,
             open: true,
             items: items,
+            amountItems: items,
         }));
+        // this.recipeAmount.update((el) => ({
+        //     ...el,
+        //     open: true,
+        //     items: items,
+        // }));
     }
 }

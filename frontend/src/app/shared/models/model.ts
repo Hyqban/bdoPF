@@ -113,6 +113,7 @@ export interface WindowSizeChange {
 export interface RecipeAmountInterface {
     open: boolean;
     items: Item[];
+    amountItems: Item[];
     amount: number;
     averageYield: number;
 }
